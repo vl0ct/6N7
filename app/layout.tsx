@@ -1,5 +1,8 @@
 import { Inter, Outfit } from "next/font/google"
 
+import { ClerkProvider, Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs"
+import { shadcn } from "@clerk/ui/themes"
+
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -18,17 +21,24 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(
-        "antialiased",
-        inter.variable,
-        outfitHeading.variable
-      )}
+      className={cn("antialiased", inter.variable, outfitHeading.variable)}
     >
       <body>
-        <ThemeProvider>
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <ClerkProvider appearance={{ theme: shadcn }}>
+          <ThemeProvider>
+            <header>
+              <Show when="signed-out">
+                <SignInButton />
+                <SignUpButton />
+              </Show>
+              <Show when="signed-in">
+                {/* <UserButton /> */}
+              </Show>
+            </header>
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </ClerkProvider>
       </body>
     </html>
   )
