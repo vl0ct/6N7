@@ -52,12 +52,14 @@ export function WorkflowNav({ workflows, onCreateWorkflow }: WorkflowNavProps) {
           <SidebarMenu>
             <SidebarMenuItem>
               <Popover>
-                <PopoverTrigger asChild>
-                  <SidebarMenuButton tooltip="Workflows">
-                    <WorkflowIcon />
-                    <span>Workflows</span>
-                  </SidebarMenuButton>
-                </PopoverTrigger>
+                <PopoverTrigger
+                  render={
+                    <SidebarMenuButton tooltip="Workflows">
+                      <WorkflowIcon />
+                      <span>Workflows</span>
+                    </SidebarMenuButton>
+                  }
+                />
                 <PopoverContent side="right" align="start" className="p-1">
                   <SidebarMenu>
                     <SidebarMenuItem>
