@@ -5,7 +5,6 @@ import {
   Show,
   SignInButton,
   SignUpButton,
-  UserButton,
 } from "@clerk/nextjs"
 import { shadcn } from "@clerk/ui/themes"
 
