@@ -1,11 +1,6 @@
 import { Inter, Outfit } from "next/font/google"
 
-import {
-  ClerkProvider,
-  Show,
-  SignInButton,
-  SignUpButton,
-} from "@clerk/nextjs"
+import { ClerkProvider, Show, SignInButton, SignUpButton } from "@clerk/nextjs"
 import { shadcn } from "@clerk/ui/themes"
 
 import "./globals.css"
