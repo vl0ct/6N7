@@ -25,7 +25,9 @@ export default function NotFound() {
         </EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button render={<Link href="/">Back to workflows</Link>} />
+        <Button asChild>
+          <Link href="/">Back to workflows</Link>
+        </Button>
       </EmptyContent>
     </Empty>
   )
