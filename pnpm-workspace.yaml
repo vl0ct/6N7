@@ -1,7 +1,5 @@
 packages: []
 
-confirmModulesPurge: false
-
 allowBuilds:
   sharp: true
   unrs-resolver: true
@@ -10,3 +8,5 @@ allowBuilds:
   core-js: false
   utf-8-validate: false
   esbuild: true
+  '@google/genai': true
+  protobufjs: true
