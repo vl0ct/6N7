@@ -1,5 +1,6 @@
 import type { Node } from "@xyflow/react"
 import {
+  Bot,
   Eye,
   Globe,
   Mail,
@@ -123,6 +124,27 @@ export const nodeRegistry = {
       { path: "matches", label: "Matches" },
       { path: "matches[0].selector", label: "Selector" },
       { path: "matches[0].description", label: "Description" },
+    ],
+  },
+  agent: {
+    type: "agent",
+    kind: "action",
+    label: "Agent",
+    icon: Bot,
+    accent: "bg-rose-500 text-white",
+    fields: [
+      {
+        key: "instruction",
+        label: "Instruction",
+        placeholder: "Search for the stock price of NVDA",
+        multiline: true,
+        required: true,
+      },
+    ],
+    outputs: [
+      { path: "success", label: "Success" },
+      { path: "message", label: "Message" },
+      { path: "completed", label: "Completed" },
     ],
   },
   "send-email": {

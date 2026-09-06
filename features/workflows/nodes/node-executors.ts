@@ -5,6 +5,7 @@ import type {
   NodeType,
 } from "@/features/workflows/nodes/node-registry"
 import { act } from "./act"
+import { agent } from "./agent"
 import { extract } from "./extract"
 import { observe } from "./observe"
 import { openUrl } from "./open-url"
@@ -32,6 +33,8 @@ export const nodeExecutors: Partial<Record<NodeType, NodeExecutor>> = {
       stagehand: await getStagehand(),
       instruction: values.instruction,
     }),
+  agent: async ({ values, getStagehand }) =>
+    agent({ stagehand: await getStagehand(), instruction: values.instruction }),
   "send-email": async ({ values }) =>
     sendEmail({ to: values.to, subject: values.subject, body: values.body }),
 } satisfies Record<ActionNodeType, NodeExecutor>
