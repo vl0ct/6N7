@@ -8,6 +8,7 @@ import { act } from "./act"
 import { extract } from "./extract"
 import { observe } from "./observe"
 import { openUrl } from "./open-url"
+import { sendEmail } from "./send-email"
 
 export type NodeContext = {
   values: Record<string, string>
@@ -31,4 +32,6 @@ export const nodeExecutors: Partial<Record<NodeType, NodeExecutor>> = {
       stagehand: await getStagehand(),
       instruction: values.instruction,
     }),
+  "send-email": async ({ values }) =>
+    sendEmail({ to: values.to, subject: values.subject, body: values.body }),
 } satisfies Record<ActionNodeType, NodeExecutor>
