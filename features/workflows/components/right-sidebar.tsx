@@ -254,7 +254,6 @@ function Palette() {
   return (
     <Section title="Toolbar">
       <Accordion
-        type="multiple"
         defaultValue={sections.map((s) => s.kind)}
         className="px-3 py-2"
       >

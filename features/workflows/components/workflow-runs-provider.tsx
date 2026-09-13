@@ -3,9 +3,14 @@
 import { createContext, useContext, useMemo } from "react"
 import { useRealtimeRunsWithTag } from "@trigger.dev/react-hooks"
 
-import type { RunStep } from "@/features/workflows/tasks/run-workflow"
+import type {
+  RunStep,
+  runWorkflowTask,
+} from "@/features/workflows/tasks/run-workflow"
 
-type WorkflowRun = ReturnType<typeof useRealtimeRunsWithTag>["runs"][number]
+type WorkflowRun = ReturnType<
+  typeof useRealtimeRunsWithTag<typeof runWorkflowTask>
+>["runs"][number]
 
 interface WorkflowRunsContextValue {
   runs: WorkflowRun[]
@@ -30,7 +35,7 @@ export function WorkflowRunsProvider({
   accessToken,
   children,
 }: WorkflowRunsProviderProps) {
-  const { runs, error } = useRealtimeRunsWithTag(
+  const { runs, error } = useRealtimeRunsWithTag<typeof runWorkflowTask>(
     `workflow:${workflowId}`,
     { accessToken }
   )
@@ -90,6 +95,14 @@ export function useLatestRunSteps(): LatestRunSteps {
 
     return { steps: stepsForRun(latest), isLive: isRunLive(latest) }
   }, [runs])
+}
+
+// The run currently in flight, if any — at most one is live at a time. A Stop
+// button reads this to know whether there's a run to cancel and, if so, its id.
+export function useLiveRun(): WorkflowRun | undefined {
+  const { runs } = useWorkflowRuns()
+
+  return useMemo(() => runs.find(isRunLive), [runs])
 }
 
 // The Browserbase session id a finished run drove, read from its final output so
