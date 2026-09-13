@@ -27,6 +27,7 @@
     "@liveblocks/react-ui": "^3.24.1",
     "@neondatabase/serverless": "^1.1.0",
     "@shadcn/react": "^0.2.1",
+    "@trigger.dev/core": "^4.5.16",
     "@trigger.dev/react-hooks": "^4.5.14",
     "@trigger.dev/sdk": "4.5.14",
     "@xyflow/react": "^12.11.5",
