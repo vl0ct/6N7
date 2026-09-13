@@ -1,7 +1,7 @@
 import toposort from "toposort"
 import { logger, metadata, task } from "@trigger.dev/sdk"
 import type { DeserializedJson } from "@trigger.dev/core"
-import { Stagehand } from "@browserbasehq/stagehand"
+import { browserbase, Stagehand } from "@browserbasehq/stagehand"
 import { nodeExecutors } from "@/features/workflows/nodes/node-executors"
 import {
   interpolate,
@@ -86,17 +86,14 @@ export const runWorkflowTask = task({
     let browserbaseSessionId: string | undefined
     const getStagehand = async () => {
       if (stagehand) return stagehand
-      stagehand = new Stagehand({
-        env: "BROWSERBASE",
+      const bbBrowser = await browserbase.launch({
         apiKey: process.env.BROWSERBASE_API_KEY!,
-        model: "google/gemini-2.5-flash",
-        // Pino's logging backend spawns a thread-stream worker (lib/worker.js)
-        // that can't be resolved inside trigger.dev's bundled output. Disable it —
-        // the option exists for exactly these minimal/bundled environments.
-        disablePino: true,
       })
-      await stagehand.init()
-      browserbaseSessionId = stagehand.browserbaseSessionID
+      stagehand = await Stagehand.create({
+        browser: bbBrowser,
+        model: { modelName: "google/gemini-2.5-flash" as const },
+      })
+      browserbaseSessionId = bbBrowser.sessionId
       return stagehand
     }
 
