@@ -204,24 +204,45 @@ async function findOne(
 async function migrateUsers(csvUsers: ClerkCsvUser[], clerkUsers: ClerkUser[]) {
   let imported = 0
   let skipped = 0
+  let linked = 0
+
+  // Clerk id -> id actually used in Better Auth. They differ when someone
+  // already signed in with Better Auth before the import ran: that sign-in
+  // created a row with a generated id but the same email, so the import has to
+  // attach accounts and memberships to that existing row instead of inserting a
+  // duplicate that would violate the unique email index.
+  const userIdByClerkId = new Map<string, string>()
 
   for (const csvUser of csvUsers) {
     const clerkUser = clerkUsers.find((user) => user.id === csvUser.id)
+    const email = csvUser.primary_email_address.trim().toLowerCase()
 
-    const existing = await findOne("user", [{ field: "id", value: csvUser.id }])
+    const existing =
+      (await findOne("user", [{ field: "id", value: csvUser.id }])) ??
+      (await findOne("user", [{ field: "email", value: email }]))
 
     const createdAt = safeDate(clerkUser?.created_at)
     const updatedAt = safeDate(clerkUser?.updated_at)
 
     if (existing) {
-      skipped += 1
+      const existingId = String(existing.id)
+      userIdByClerkId.set(csvUser.id, existingId)
+
+      if (existingId === csvUser.id) {
+        skipped += 1
+      } else {
+        linked += 1
+        console.log(
+          `User ${csvUser.id} (${email}) already exists as ${existingId}; attaching accounts to it.`
+        )
+      }
     } else {
       await createRow(
         "user",
         {
           id: csvUser.id,
           name: fullName(csvUser.first_name, csvUser.last_name),
-          email: csvUser.primary_email_address.trim().toLowerCase(),
+          email,
           emailVerified: csvList(csvUser.verified_email_addresses).length > 0,
           image: clerkUser?.image_url ?? null,
           createdAt,
@@ -229,22 +250,25 @@ async function migrateUsers(csvUsers: ClerkCsvUser[], clerkUsers: ClerkUser[]) {
         },
         true
       )
+      userIdByClerkId.set(csvUser.id, csvUser.id)
       imported += 1
     }
+
+    const userId = userIdByClerkId.get(csvUser.id) ?? csvUser.id
 
     // Clerk hashes passwords with bcrypt. Better Auth's configured verifier
     // accepts both bcrypt (migrated users) and scrypt (new sign-ups).
     if (csvUser.password_digest) {
       const existingCredential = await findOne("account", [
-        { field: "userId", value: csvUser.id },
+        { field: "userId", value: userId },
         { field: "providerId", value: "credential" },
       ])
 
       if (!existingCredential) {
         await createRow("account", {
           providerId: "credential",
-          accountId: csvUser.id,
-          userId: csvUser.id,
+          accountId: userId,
+          userId,
           password: csvUser.password_digest,
           createdAt,
           updatedAt,
@@ -253,8 +277,14 @@ async function migrateUsers(csvUsers: ClerkCsvUser[], clerkUsers: ClerkUser[]) {
     }
 
     for (const externalAccount of clerkUser?.external_accounts ?? []) {
+      const providerId = externalAccount.provider.replace(/^oauth_/, "")
+
+      // A user who already signed in with Better Auth has this provider linked
+      // under a different account row id, so match on the provider's own id.
       const existingAccount = await findOne("account", [
-        { field: "id", value: externalAccount.id },
+        { field: "userId", value: userId },
+        { field: "providerId", value: providerId },
+        { field: "accountId", value: externalAccount.provider_user_id },
       ])
       if (existingAccount) continue
 
@@ -262,9 +292,9 @@ async function migrateUsers(csvUsers: ClerkCsvUser[], clerkUsers: ClerkUser[]) {
         "account",
         {
           id: externalAccount.id,
-          providerId: externalAccount.provider.replace(/^oauth_/, ""),
+          providerId,
           accountId: externalAccount.provider_user_id,
-          userId: csvUser.id,
+          userId,
           scope: externalAccount.approved_scopes || null,
           createdAt: safeDate(externalAccount.created_at),
           updatedAt: safeDate(externalAccount.updated_at),
@@ -274,7 +304,7 @@ async function migrateUsers(csvUsers: ClerkCsvUser[], clerkUsers: ClerkUser[]) {
     }
   }
 
-  return { imported, skipped }
+  return { imported, skipped, linked, userIdByClerkId }
 }
 
 function slugify(value: string) {
@@ -292,7 +322,7 @@ function mapRole(role: string) {
   return "member"
 }
 
-async function migrateOrganizations() {
+async function migrateOrganizations(userIdByClerkId: Map<string, string>) {
   const organizations = await getClerkOrganizations()
   let imported = 0
   let skipped = 0
@@ -327,9 +357,10 @@ async function migrateOrganizations() {
     const memberships = await getClerkMemberships(organization.id)
 
     for (const membership of memberships) {
-      const userId = membership.public_user_data?.user_id
-      if (!userId) continue
+      const clerkUserId = membership.public_user_data?.user_id
+      if (!clerkUserId) continue
 
+      const userId = userIdByClerkId.get(clerkUserId) ?? clerkUserId
       const user = await findOne("user", [{ field: "id", value: userId }])
       if (!user) continue
 
@@ -387,9 +418,11 @@ async function main() {
   }
 
   const users = await migrateUsers(csvUsers, clerkUsers)
-  console.log(`Users: ${users.imported} imported, ${users.skipped} skipped.`)
+  console.log(
+    `Users: ${users.imported} imported, ${users.skipped} already present, ${users.linked} matched to an existing Better Auth account.`
+  )
 
-  const organizations = await migrateOrganizations()
+  const organizations = await migrateOrganizations(users.userIdByClerkId)
   console.log(
     `Organizations: ${organizations.imported} imported, ${organizations.skipped} already present.`
   )
