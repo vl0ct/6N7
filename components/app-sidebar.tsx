@@ -1,58 +1,70 @@
 import * as React from "react"
-import { OrganizationSwitcher, UserButton } from "@clerk/nextjs"
-import { auth } from "@clerk/nextjs/server"
+import Link from "next/link"
 
+import { LogoIcon } from "@/components/logo"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarTrigger,
 } from "@/components/ui/sidebar"
+import {
+  OrganizationSwitcher,
+  type OrganizationSummary,
+} from "@/features/auth/components/organization-switcher"
+import {
+  SettingsDialog,
+  type SettingsDialogData,
+} from "@/features/settings/components/settings-dialog"
 import { createWorkflowAction } from "@/features/workflows/actions"
 import { WorkflowNav } from "@/features/workflows/components/workflow-nav"
-import { listWorkflows } from "@/features/workflows/data"
+import { WorkflowSearch } from "@/features/workflows/components/workflow-search"
+import type { Workflow } from "@/lib/db/schema"
 
-export async function AppSidebar({
+export function AppSidebar({
+  workflows,
+  organizations,
+  activeOrganizationId,
+  settings,
   ...props
-}: React.ComponentProps<typeof Sidebar>) {
-  const { orgId } = await auth()
-  const workflows = orgId ? await listWorkflows(orgId) : []
-
+}: React.ComponentProps<typeof Sidebar> & {
+  workflows: Workflow[]
+  organizations: OrganizationSummary[]
+  activeOrganizationId: string
+  settings: SettingsDialogData
+}) {
   return (
-    <Sidebar variant="inset" collapsible="icon" {...props}>
-      <SidebarHeader className="flex-row items-center justify-between gap-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0">
-        <OrganizationSwitcher
-          afterCreateOrganizationUrl="/"
-          afterSelectOrganizationUrl="/"
-          afterLeaveOrganizationUrl="/"
-          hidePersonal
-          appearance={{
-            elements: {
-              rootBox: "min-w-0 group-data-[collapsible=icon]:!hidden",
-              organizationSwitcherTrigger: "w-full justify-between",
-            },
-          }}
-        />
-        <SidebarTrigger />
+    <Sidebar variant="inset" collapsible="offcanvas" className="p-0" {...props}>
+      <SidebarHeader className="flex-row items-center justify-between gap-1 py-3 pr-1 pl-3">
+        <Link
+          href="/dashboard"
+          aria-label="6N7 dashboard"
+          className="relative flex items-center gap-2 after:absolute after:-inset-3"
+        >
+          <LogoIcon className="size-5" />
+          <span className="text-sm font-medium tracking-tight">6N7</span>
+        </Link>
+        <div className="flex items-center gap-1">
+          <WorkflowSearch workflows={workflows} />
+        </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="overflow-hidden">
         <WorkflowNav
           workflows={workflows}
           onCreateWorkflow={createWorkflowAction}
         />
       </SidebarContent>
-      <SidebarFooter className="group-data-[collapsible=icon]:items-center">
-        <UserButton
-          appearance={{
-            elements: {
-              rootBox: "w-full",
-              userButtonTrigger:
-                "w-full justify-start group-data-[collapsible=icon]:justify-center",
-              userButtonOuterIdentifier: "group-data-[collapsible=icon]:hidden",
-            },
-          }}
-        />
+      <SidebarFooter className="gap-1 pl-1 pr-1 ">
+        <div className="flex items-center gap-1">
+          <div className="min-w-0 flex-1">
+            <OrganizationSwitcher
+              organizations={organizations}
+              activeOrganizationId={activeOrganizationId}
+              className="w-full max-w-none justify-start sm:max-w-none"
+            />
+          </div>
+          <SettingsDialog {...settings} />
+        </div>
       </SidebarFooter>
     </Sidebar>
   )
