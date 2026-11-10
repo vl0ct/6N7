@@ -1,9 +1,6 @@
 import { Inter, Outfit } from "next/font/google"
+import { Agentation } from "agentation"
 
-import { ClerkProvider } from "@clerk/nextjs"
-import { shadcn } from "@clerk/ui/themes"
-
-import "@clerk/ui/themes/shadcn.css"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
@@ -23,20 +20,20 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", inter.variable, outfitHeading.variable)}
+      className={cn(
+        "scroll-smooth antialiased",
+        inter.variable,
+        outfitHeading.variable
+      )}
     >
       <body>
-        <ClerkProvider
-          appearance={{ theme: shadcn }}
-          taskUrls={{ "choose-organization": "/choose-organization" }}
-        >
-          <ThemeProvider>
-            <TooltipProvider>
-              {children}
-              <Toaster />
-            </TooltipProvider>
-          </ThemeProvider>
-        </ClerkProvider>
+        <ThemeProvider>
+          <TooltipProvider>
+            {children}
+            <Toaster />
+          </TooltipProvider>
+        </ThemeProvider>
+        {process.env.NODE_ENV === "development" && <Agentation />}
       </body>
     </html>
   )
