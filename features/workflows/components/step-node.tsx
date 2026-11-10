@@ -29,10 +29,10 @@ function StepNodeComponent({ id, data, selected }: NodeProps<StepNodeType>) {
   return (
     <div
       className={cn(
-        "max-w-80 min-w-50 rounded-(--radius) border-2 border-border bg-card text-card-foreground",
-        isRunning && "border-blue-500",
-        isFailed && "border-destructive",
-        selected && "ring-2 ring-ring ring-offset-2 ring-offset-background"
+        "max-w-80 min-w-50 rounded-(--radius) border border-border bg-card text-card-foreground",
+        isRunning && "bg-blue-500/10",
+        isFailed && "bg-destructive/10",
+        selected && "bg-accent"
       )}
     >
       {hasTarget && (
@@ -62,8 +62,7 @@ function StepNodeComponent({ id, data, selected }: NodeProps<StepNodeType>) {
 
       {fields.length > 0 && (
         <>
-          <div className="border-t border-border" />
-          <div className="flex flex-col gap-1.5 px-3 py-2.5">
+          <div className="flex flex-col gap-1.5 border-t border-border px-3 py-2.5">
             {fields.map((field) => (
               <div
                 key={field.key}

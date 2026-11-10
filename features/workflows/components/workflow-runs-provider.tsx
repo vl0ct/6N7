@@ -30,10 +30,9 @@ export function WorkflowRunsProvider({
   accessToken,
   children,
 }: WorkflowRunsProviderProps) {
-  const { runs, error } = useRealtimeRunsWithTag(
-    `workflow:${workflowId}`,
-    { accessToken }
-  )
+  const { runs, error } = useRealtimeRunsWithTag(`workflow:${workflowId}`, {
+    accessToken,
+  })
 
   const value = useMemo<WorkflowRunsContextValue>(
     () => ({ runs, error }),

@@ -1,12 +1,12 @@
-"use client";
+"use client"
 
-import { ReactNode } from "react";
+import { ReactNode } from "react"
 import {
   LiveblocksProvider,
   RoomProvider,
   ClientSideSuspense,
-} from "@liveblocks/react/suspense";
-import { Spinner } from "@/components/ui/spinner";
+} from "@liveblocks/react/suspense"
+import { Spinner } from "@/components/ui/spinner"
 
 export function Room({
   roomId,
@@ -25,23 +25,22 @@ export function Room({
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ userIds }),
-          });
+          })
 
           if (!response.ok) {
-            return undefined;
+            return undefined
           }
 
-          return await response.json();
+          return await response.json()
         } catch {
-          return undefined;
+          return undefined
         }
       }}
     >
-
       <RoomProvider id={roomId}>
         <ClientSideSuspense
           fallback={
-            <div className="flex min-h-svh items-center justify-center">
+            <div className="flex h-full items-center justify-center">
               <Spinner className="size-6 text-muted-foreground" />
             </div>
           }
@@ -50,5 +49,5 @@ export function Room({
         </ClientSideSuspense>
       </RoomProvider>
     </LiveblocksProvider>
-  );
+  )
 }

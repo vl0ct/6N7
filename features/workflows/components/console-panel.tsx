@@ -36,18 +36,20 @@ export function ConsolePanel() {
   }
 
   return (
-    <ResizablePanelGroup orientation="horizontal" className="size-full">
-      <ResizablePanel minSize="12rem">
-        <LogsPanel selected={selected} onSelect={toggle} />
-      </ResizablePanel>
-      {selected && (
-        <>
-          <ResizableHandle withHandle />
-          <ResizablePanel defaultSize="20rem" minSize="12rem">
-            <InspectorPanel selection={selected} />
-          </ResizablePanel>
-        </>
-      )}
-    </ResizablePanelGroup>
+    <div className="size-full overflow-hidden rounded-md bg-canvas">
+      <ResizablePanelGroup orientation="horizontal" className="size-full">
+        <ResizablePanel minSize="12rem">
+          <LogsPanel selected={selected} onSelect={toggle} />
+        </ResizablePanel>
+        {selected && (
+          <>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize="20rem" minSize="12rem">
+              <InspectorPanel selection={selected} />
+            </ResizablePanel>
+          </>
+        )}
+      </ResizablePanelGroup>
+    </div>
   )
 }

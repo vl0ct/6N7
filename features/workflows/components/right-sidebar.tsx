@@ -20,8 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ResizablePanel } from "@/components/ui/resizable"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
 
 import {
@@ -46,31 +44,6 @@ import {
 // header with workflow actions (delete, run), then two tabs — a Toolbar for
 // adding nodes and an Editor for tweaking the selected node. Each helper below is
 // defined just above the block that uses it.
-
-// ---------------------------------------------------------------------------
-// Shared pieces — used by both the Toolbar and the Editor.
-// ---------------------------------------------------------------------------
-
-// A titled, scrollable panel. Each tab renders its content inside one.
-function Section({
-  title,
-  icon,
-  children,
-}: {
-  title: string
-  icon?: React.ReactNode
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex items-center gap-2 border-y border-border bg-card px-3 py-1.5 text-sm font-semibold">
-        {icon}
-        {title}
-      </div>
-      <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
-    </div>
-  )
-}
 
 // ---------------------------------------------------------------------------
 // Editor tab — edits the fields of the selected node.
@@ -126,13 +99,13 @@ function Inspector({ node }: { node: StepNodeType | undefined }) {
 
   if (!node) {
     return (
-      <Section title="Editor">
+      <div className="min-h-0 flex-1 overflow-y-auto">
         <p className="p-3 text-sm text-muted-foreground">No node selected</p>
-      </Section>
+      </div>
     )
   }
 
-  const { type, title, values } = node.data
+  const { type, values } = node.data
   const def: NodeDefinition = nodeRegistry[type]
 
   // Untouched fields fall back to the first one, so a chip always has a home.
@@ -146,7 +119,7 @@ function Inspector({ node }: { node: StepNodeType | undefined }) {
   }
 
   return (
-    <Section title={title} icon={<NodeIcon type={type} />}>
+    <div className="min-h-0 flex-1 overflow-y-auto">
       <div className="flex flex-col gap-3 p-3">
         {def.fields.length === 0 ? (
           <p className="text-xs text-muted-foreground">No properties</p>
@@ -192,7 +165,7 @@ function Inspector({ node }: { node: StepNodeType | undefined }) {
           </div>
         )}
       </div>
-    </Section>
+    </div>
   )
 }
 
@@ -254,8 +227,9 @@ function Palette() {
   }
 
   return (
-    <Section title="Toolbar">
+    <div className="min-h-0 flex-1 overflow-y-auto">
       <Accordion
+        multiple
         defaultValue={sections.map((s) => s.kind)}
         className="px-3 py-2"
       >
@@ -286,7 +260,7 @@ function Palette() {
           </AccordionItem>
         ))}
       </Accordion>
-    </Section>
+    </div>
   )
 }
 
@@ -387,53 +361,22 @@ function RunButton({ workflowId }: { workflowId: string }) {
 // ---------------------------------------------------------------------------
 
 export function RightSidebar({ workflowId }: { workflowId: string }) {
-  const [tab, setTab] = useState("toolbar")
-
-  // TODO: read the currently selected node from React Flow.
   const selected = useStore((s) => s.nodes.find((n) => n.selected)) as
     StepNodeType | undefined
 
-  // TODO: auto-switch to the Editor tab when the selection changes.
-  const [prevSelectedId, setPrevSelectedId] = useState(selected?.id)
-  if (selected && selected.id !== prevSelectedId) {
-    setPrevSelectedId(selected.id)
-    setTab("editor")
-  }
-
   return (
-    <ResizablePanel
-      className="bg-background"
-      defaultSize="16rem"
-      minSize="14rem"
-      maxSize="36rem"
-      groupResizeBehavior="preserve-pixel-size"
-    >
-      <Tabs value={tab} onValueChange={setTab} className="size-full gap-0">
-        <div className="flex items-center justify-between border-b border-border p-2">
-          <ActionsMenu workflowId={workflowId} />
-          <RunButton workflowId={workflowId} />
-        </div>
-        <TabsList className="m-2 w-fit bg-background">
-          <TabsTrigger
-            value="toolbar"
-            className="flex-none rounded-sm data-active:bg-accent! data-active:text-accent-foreground! data-active:shadow-none! dark:data-active:border-transparent!"
-          >
-            Toolbar
-          </TabsTrigger>
-          <TabsTrigger
-            value="editor"
-            className="flex-none rounded-sm data-active:bg-accent! data-active:text-accent-foreground! data-active:shadow-none! dark:data-active:border-transparent!"
-          >
-            Editor
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="toolbar" className="flex min-h-0 flex-col">
+    <div className="flex size-full flex-col overflow-hidden rounded-md bg-canvas">
+      <div className="flex items-center justify-between gap-2 border-border p-2">
+        <ActionsMenu workflowId={workflowId} />
+        <RunButton workflowId={workflowId} />
+      </div>
+      <div className="flex min-h-0 flex-1 flex-col">
+        {selected ? (
+          <Inspector key={selected.id} node={selected} />
+        ) : (
           <Palette />
-        </TabsContent>
-        <TabsContent value="editor" className="flex min-h-0 flex-col">
-          <Inspector key={selected?.id} node={selected} />
-        </TabsContent>
-      </Tabs>
-    </ResizablePanel>
+        )}
+      </div>
+    </div>
   )
 }

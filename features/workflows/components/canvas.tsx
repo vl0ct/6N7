@@ -12,14 +12,14 @@ import {
   Panel,
 } from "@xyflow/react"
 import { useLiveblocksFlow, Cursors } from "@liveblocks/react-flow"
-import { AvatarStack } from "@liveblocks/react-ui";
+import { AvatarStack } from "@liveblocks/react-ui"
 
 import { StepNode } from "@/features/workflows/components/step-node"
 import type { StepNodeType } from "@/features/workflows/nodes/node-registry"
 
 import "@xyflow/react/dist/style.css"
-import "@liveblocks/react-ui/styles.css";
-import "@liveblocks/react-flow/styles.css";
+import "@liveblocks/react-ui/styles.css"
+import "@liveblocks/react-flow/styles.css"
 
 const nodeTypes: NodeTypes = { step: StepNode }
 
@@ -34,7 +34,7 @@ const initialNodes: StepNodeType[] = [
 
 const initialEdges: Edge[] = []
 
-const emptySubscribe = () => () => { }
+const emptySubscribe = () => () => {}
 
 // False during server render and hydration, true after mount. Keeps the
 // server and initial client render identical to avoid a hydration mismatch.
@@ -50,24 +50,19 @@ export function Canvas() {
   const { resolvedTheme } = useTheme()
   const mounted = useMounted()
   const colorMode: ColorMode = mounted
-    ? (resolvedTheme as ColorMode) ?? "light"
+    ? ((resolvedTheme as ColorMode) ?? "light")
     : "light"
-  const {
-    nodes,
-    edges,
-    onNodesChange,
-    onEdgesChange,
-    onConnect,
-    onDelete,
-  } = useLiveblocksFlow({
-    suspense: true,
-    nodes: { initial: initialNodes },
-    edges: { initial: initialEdges },
-  })
+  const { nodes, edges, onNodesChange, onEdgesChange, onConnect, onDelete } =
+    useLiveblocksFlow({
+      suspense: true,
+      nodes: { initial: initialNodes },
+      edges: { initial: initialEdges },
+    })
 
   return (
     <div className="size-full">
       <ReactFlow
+        className="rounded-md"
         nodeTypes={nodeTypes}
         nodes={nodes}
         edges={edges}
@@ -85,7 +80,7 @@ export function Canvas() {
         }}
         style={
           {
-            "--xy-background-color": "var(--background)",
+            "--xy-background-color": "var(--canvas)",
             "--xy-edge-stroke-width": 2,
             "--xy-connectionline-stroke-width": 2,
           } as React.CSSProperties
@@ -94,7 +89,7 @@ export function Canvas() {
       >
         <Controls />
         <Cursors />
-        <Panel position="top-right">
+        <Panel position="top-right" className="p-3" style={{ margin: 0 }}>
           <AvatarStack />
         </Panel>
       </ReactFlow>
