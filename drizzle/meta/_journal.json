@@ -8,6 +8,13 @@
       "when": 1786567402385,
       "tag": "0000_odd_whirlwind",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794236861921,
+      "tag": "0001_lucky_bucky",
+      "breakpoints": true
     }
   ]
 }

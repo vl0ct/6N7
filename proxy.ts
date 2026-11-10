@@ -1,22 +1,41 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
+import { getSessionCookie } from "better-auth/cookies"
+import { NextResponse, type NextRequest } from "next/server"
 
-const isPublicRoute = createRouteMatcher([
-  "/sign-in(.*)",
-  "/sign-up(.*)",
-  "/__clerk(.*)",
-  // "/api/liveblocks/auth(.*)",
-])
+const protectedPrefixes = ["/dashboard", "/workflows", "/choose-organization"]
+const authPages = ["/sign-in", "/sign-up", "/forgot-password"]
 
-export default clerkMiddleware(async (auth, request) => {
-  if (!isPublicRoute(request)) {
-    await auth.protect()
+function matchesPrefix(pathname: string, prefix: string) {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`)
+}
+
+// Optimistic redirects only. Every protected page, Server Action and Route
+// Handler validates the session against the database itself.
+export function proxy(request: NextRequest) {
+  const sessionCookie = getSessionCookie(request)
+  const { pathname } = request.nextUrl
+
+  if (
+    !sessionCookie &&
+    protectedPrefixes.some((p) => matchesPrefix(pathname, p))
+  ) {
+    return NextResponse.redirect(new URL("/sign-in", request.url))
   }
-})
+
+  if (sessionCookie && authPages.includes(pathname)) {
+    return NextResponse.redirect(new URL("/dashboard", request.url))
+  }
+
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: [
-    "/__clerk(.*)",
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    "/(api|trpc)(.*)",
+    "/dashboard/:path*",
+    "/workflows/:path*",
+    "/choose-organization",
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/reset-password",
   ],
 }
