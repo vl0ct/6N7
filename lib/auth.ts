@@ -2,17 +2,11 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins"
 import { betterAuth } from "better-auth"
-import { verifyPassword } from "better-auth/crypto"
-import bcrypt from "bcryptjs"
 import { eq } from "drizzle-orm"
 
 import { db, schema } from "@/lib/db"
 import { sendPasswordResetEmail } from "@/lib/auth-email"
 import { getSocialProviderCredentials } from "@/lib/auth-providers"
-
-// Clerk hashed passwords with bcrypt, so existing users must keep verifying
-// with bcrypt. New passwords use Better Auth's default scrypt hasher.
-const isBcryptHash = (hash: string) => /^\$2[aby]\$/.test(hash)
 
 const google = getSocialProviderCredentials("google")
 const github = getSocialProviderCredentials("github")
@@ -51,17 +45,10 @@ export const auth = betterAuth({
 
       // Not awaiting the mail keeps response timing from leaking whether the
       // address exists; `after` keeps the serverless invocation alive until the
-      // provider responds. Imported lazily so the migration script can import
-      // this module outside the Next.js runtime.
+      // provider responds. Imported lazily so scripts can import this module
+      // outside the Next.js runtime.
       const { after } = await import("next/server")
       after(() => email)
-    },
-    password: {
-      hash: (password) => bcrypt.hash(password, 10),
-      verify: ({ hash, password }) =>
-        isBcryptHash(hash)
-          ? bcrypt.compare(password, hash)
-          : verifyPassword({ hash, password }),
     },
   },
   databaseHooks: {
@@ -69,7 +56,7 @@ export const auth = betterAuth({
       create: {
         // Better Auth doesn't pick an active organization automatically. Mirror
         // Clerk's choose-organization flow by defaulting to the user's first
-        // membership, so migrated users land on their workspace immediately.
+        // membership, so users land on their workspace immediately.
         before: async (session) => {
           const [membership] = await db
             .select({ organizationId: schema.member.organizationId })

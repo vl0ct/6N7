@@ -64,20 +64,5 @@ Apply the auth tables after pulling schema changes:
 pnpm db:migrate
 ```
 
-### Migrating from Clerk
-
-1. Export users from the Clerk dashboard and save the CSV as
-   `exported_users.csv` in the project root.
-2. Keep `CLERK_SECRET_KEY` in `.env.local` (it is only needed for the import).
-3. Run:
-
-   ```bash
-   pnpm auth:migrate-clerk
-   ```
-
-The script imports users, bcrypt password hashes, external accounts and
-organization memberships. It preserves Clerk IDs, so existing workflows stay
-attached to the same organization. Once the migration is verified, remove the
-`CLERK_*` and `NEXT_PUBLIC_CLERK_*` variables.
-
-New users sign in with email/password and create an organization after sign-up.
+New users sign in with email/password or a social provider, then create an
+organization.
