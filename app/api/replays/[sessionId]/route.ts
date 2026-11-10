@@ -1,7 +1,8 @@
-import { auth } from "@clerk/nextjs/server"
+import { headers } from "next/headers"
 import { NotFoundError } from "@browserbasehq/sdk"
 
 import { browserbase } from "@/lib/browserbase"
+import { auth } from "@/lib/auth"
 
 // Proxies a Browserbase session's replay so the browser can play it back. The
 // retrieval needs the secret API key, so it can only happen server-side — the
@@ -15,8 +16,8 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ sessionId: string }> }
 ) {
-  const { userId, orgId } = await auth()
-  if (!userId || !orgId) {
+  const session = await auth.api.getSession({ headers: await headers() })
+  if (!session?.user.id || !session.session.activeOrganizationId) {
     return new Response("Unauthorized", { status: 401 })
   }
 

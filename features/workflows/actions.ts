@@ -1,6 +1,5 @@
 "use server"
 
-import { auth } from "@clerk/nextjs/server"
 import { runs, tasks } from "@trigger.dev/sdk"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
@@ -14,13 +13,10 @@ import {
   saveWorkflowGraph,
 } from "@/features/workflows/data"
 import { WorkflowGraph } from "@/lib/db/schema"
+import { requireOrganization } from "@/lib/auth-server"
 
 export async function createWorkflowAction(name: string) {
-  const { orgId } = await auth()
-
-  if (!orgId) {
-    throw new Error("No active organization")
-  }
+  const { organizationId: orgId } = await requireOrganization()
 
   const workflow = await createWorkflow(orgId, name)
 
@@ -29,11 +25,7 @@ export async function createWorkflowAction(name: string) {
 }
 
 export async function deleteWorkflowAction(id: string) {
-  const { orgId } = await auth()
-
-  if (!orgId) {
-    throw new Error("No active organization")
-  }
+  const { organizationId: orgId } = await requireOrganization()
 
   const workflow = await deleteWorkflow(orgId, id)
 
@@ -41,11 +33,11 @@ export async function deleteWorkflowAction(id: string) {
     throw new Error("Workflow not found")
   }
 
-  // The workflow id doubles as its Liveblocks room id — clean it up too.
+  // The workflow id doubles as its Liveblocks room id - clean it up too.
   await liveblocks.deleteRoom(id)
 
   revalidatePath("/workflows", "layout")
-  redirect("/")
+  redirect("/dashboard")
 }
 
 export async function runWorkflowAction({
@@ -55,11 +47,7 @@ export async function runWorkflowAction({
   id: string
   graph: WorkflowGraph
 }) {
-  const { orgId } = await auth()
-
-  if (!orgId) {
-    throw new Error("No active organization")
-  }
+  const { organizationId: orgId } = await requireOrganization()
 
   await saveWorkflowGraph({ orgId, id, graph })
 
@@ -73,7 +61,6 @@ export async function runWorkflowAction({
 }
 
 export async function cancelWorkflowRunAction(runId: string) {
-  const { orgId } = await auth()
-  if (!orgId) throw new Error("No active organization")
+  await requireOrganization()
   await runs.cancel(runId)
 }
