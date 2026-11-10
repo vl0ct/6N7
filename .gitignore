@@ -31,6 +31,9 @@ pnpm-debug.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# clerk migration export (contains PII)
+/exported_users.csv
+
 # neon cli
 .neon
 
