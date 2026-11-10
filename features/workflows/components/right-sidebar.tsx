@@ -281,12 +281,12 @@ function ActionsMenu({ workflowId }: { workflowId: string }) {
         <DropdownMenuItem
           variant="destructive"
           disabled={isPending}
+          closeOnClick={false}
           className="text-xs [&_svg:not([class*='size-'])]:size-3.5"
-          onSelect={(e) => {
+          onClick={() => {
             // Keep the menu mounted while the delete runs so the disabled state
             // stays visible. Running inside a transition lets the router handle
             // the action's redirect home on success.
-            e.preventDefault()
             startTransition(async () => {
               await deleteWorkflowAction(workflowId)
             })
