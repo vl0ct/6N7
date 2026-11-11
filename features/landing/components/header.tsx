@@ -71,7 +71,7 @@ export const LandingHeader = () => {
                 size="lg"
                 className="rounded-sm transition-colors"
                 nativeButton={false}
-                render={<Link href="/sign-up">Sign-up</Link>}
+                render={<Link href="/sign-up">Sign-up for free</Link>}
               />
               <Button
                 size="lg"
@@ -79,7 +79,7 @@ export const LandingHeader = () => {
                 nativeButton={false}
                 render={
                   <Link href="/sign-in">
-                    <span>Continue</span>
+                    <span>Login</span>
                     <ArrowUpRight />
                   </Link>
                 }
@@ -105,27 +105,26 @@ export const LandingHeader = () => {
             </div>
           </div>
 
-          <div className="hidden pb-6 max-lg:in-data-[state=active]:flex max-lg:in-data-[state=active]:flex-col max-lg:in-data-[state=active]:gap-6">
-            <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="hidden py-6 max-lg:in-data-[state=active]:flex max-lg:in-data-[state=active]:flex-col max-lg:in-data-[state=active]:gap-6">
+            <div className="flex flex-col gap-3">
               <Button
-                variant="outline"
+                variant="secondary"
                 size="lg"
-                className="rounded-full transition-colors hover:border-brand/50 hover:bg-brand hover:text-brand-foreground"
+                className="rounded-md transition-colors hover:border-brand/50 hover:bg-brand hover:text-brand-foreground"
                 nativeButton={false}
                 render={
-                  <Link href="/sign-in" onClick={() => setMenuState(false)}>
-                    Login
+                  <Link href="/sign-up" onClick={() => setMenuState(false)}>
+                    <span>Sign-up</span>
                   </Link>
                 }
               />
               <Button
                 size="lg"
-                className="rounded-full transition-colors hover:border-brand/50 hover:bg-brand hover:text-brand-foreground"
+                className="rounded-md transition-colors hover:border-brand/50 hover:bg-brand hover:text-brand-foreground"
                 nativeButton={false}
                 render={
-                  <Link href="/sign-up" onClick={() => setMenuState(false)}>
-                    <span>Get started</span>
-                    <ArrowUpRight />
+                  <Link href="/sign-in" onClick={() => setMenuState(false)}>
+                    <span>Continue</span>
                   </Link>
                 }
               />
