@@ -40,9 +40,17 @@ export const LandingHeader = () => {
         scrolled && "py-2"
       )}
     >
+      {menuState && (
+        <div
+          aria-hidden
+          onClick={() => setMenuState(false)}
+          className="fixed inset-0 z-10 bg-black/60 lg:hidden"
+        />
+      )}
+
       <nav
         data-state={menuState && "active"}
-        className="w-full max-lg:data-[state=active]:h-svh max-lg:data-[state=active]:overflow-y-auto max-lg:data-[state=active]:bg-black/60"
+        className="relative z-20 w-full"
       >
         <div className="mx-auto w-full max-w-5xl rounded-md border border-transparent bg-[#0A0A0A] px-6">
           <div className="relative flex items-center justify-between gap-6 py-3">
