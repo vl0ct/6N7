@@ -13,36 +13,25 @@ export const LandingHeader = () => {
   const [menuState, setMenuState] = React.useState(false)
   const scrolled = useScroll(10)
 
-  React.useEffect(() => {
-    if (!menuState) return
-
-    const mediaQuery = window.matchMedia("(max-width: 1023px)")
-    const updateOverflow = () => {
-      document.documentElement.classList.toggle(
-        "overflow-hidden",
-        mediaQuery.matches
-      )
-    }
-
-    updateOverflow()
-    mediaQuery.addEventListener("change", updateOverflow)
-
-    return () => {
-      mediaQuery.removeEventListener("change", updateOverflow)
-      document.documentElement.classList.remove("overflow-hidden")
-    }
-  }, [menuState])
-
   return (
     <header
       className={cn(
         "sticky top-0 z-20 w-full bg-canvas p-1 transition-all duration-300 ease-out",
+        "max-lg:has-data-[state=active]:bg-transparent",
         scrolled && "py-2"
       )}
     >
+      {menuState && (
+        <div
+          aria-hidden
+          onClick={() => setMenuState(false)}
+          className="fixed inset-0 z-10 bg-black/60 lg:hidden"
+        />
+      )}
+
       <nav
         data-state={menuState && "active"}
-        className="w-full max-lg:data-[state=active]:h-svh max-lg:data-[state=active]:overflow-y-auto max-lg:data-[state=active]:bg-black/60"
+        className="relative z-20 w-full max-lg:data-[state=active]:px-1"
       >
         <div className="mx-auto w-full max-w-5xl rounded-md border border-transparent bg-[#0A0A0A] px-6">
           <div className="relative flex items-center justify-between gap-6 py-3">
@@ -50,10 +39,10 @@ export const LandingHeader = () => {
               <Link
                 href="/"
                 aria-label="6N7 home"
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 sm:gap-2"
               >
                 <LogoIcon />
-                (not larping)
+                (not a meme)
               </Link>
             </div>
 
