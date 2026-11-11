@@ -31,12 +31,12 @@ export default function Hero() {
             <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
               <h1 className="mt-8 text-5xl font-medium tracking-tight text-balance text-white md:text-6xl">
                 Build browser agents
-                <br className="hidden sm:block" /> from idea to run
+                from idea to run
               </h1>
 
               <p className="mt-6 max-w-2xl text-lg text-balance text-white/70">
-                Design AI browser workflows on a shared canvas. Chain actions,
-                extract data, and run agents — then replay every step.
+                Design browser workflows on a shared canvas. Chain actions,
+                extract data, run agents and replay every step.
               </p>
 
               <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
