@@ -115,16 +115,11 @@
   html {
     @apply font-sans;
   }
-}
-
-@layer base {
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer !important;
   }
 }
-
 ::selection {
-  background-color: rgb(128 128 128 / 0.4);
-  color: var(--foreground);
+  background: #ffffff24;
 }
