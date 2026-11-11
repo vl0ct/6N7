@@ -134,7 +134,7 @@ export default function Features() {
             <br /> One workspace from idea to run.
           </h2>
           <div className="mt-16 grid gap-6 md:mt-32 lg:grid-cols-[auto_1fr]">
-            <div className="sticky top-24 h-fit w-56 max-lg:hidden">
+            <div className="sticky top-34 h-fit w-56 max-lg:hidden">
               <div className="text-sm text-muted-foreground">Product</div>
               <div className="mt-4 -ml-3 flex flex-col *:justify-start">
                 {features.map((feature) => (
