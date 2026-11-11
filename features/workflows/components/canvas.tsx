@@ -1,7 +1,5 @@
 "use client"
 
-import { useSyncExternalStore } from "react"
-import { useTheme } from "next-themes"
 import {
   Controls,
   ReactFlow,
@@ -34,24 +32,8 @@ const initialNodes: StepNodeType[] = [
 
 const initialEdges: Edge[] = []
 
-const emptySubscribe = () => () => {}
-
-// False during server render and hydration, true after mount. Keeps the
-// server and initial client render identical to avoid a hydration mismatch.
-function useMounted() {
-  return useSyncExternalStore(
-    emptySubscribe,
-    () => true,
-    () => false
-  )
-}
-
 export function Canvas() {
-  const { resolvedTheme } = useTheme()
-  const mounted = useMounted()
-  const colorMode: ColorMode = mounted
-    ? ((resolvedTheme as ColorMode) ?? "light")
-    : "light"
+  const colorMode: ColorMode = "dark"
   const { nodes, edges, onNodesChange, onEdgesChange, onConnect, onDelete } =
     useLiveblocksFlow({
       suspense: true,
