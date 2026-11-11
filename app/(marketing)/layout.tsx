@@ -16,8 +16,6 @@ export default function MarketingLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="min-h-svh bg-background text-foreground dark:bg-[#0A0A0A]">
-      {children}
-    </div>
+    <div className="min-h-svh bg-[#0A0A0A] text-foreground">{children}</div>
   )
 }
