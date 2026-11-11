@@ -2,7 +2,6 @@ import { Inter, Outfit } from "next/font/google"
 import { Agentation } from "agentation"
 
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
@@ -19,20 +18,18 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      suppressHydrationWarning
+      style={{ colorScheme: "dark" }}
       className={cn(
-        "scroll-smooth antialiased",
+        "dark scroll-smooth antialiased bg-canvas-frame",
         inter.variable,
         outfitHeading.variable
       )}
     >
       <body>
-        <ThemeProvider>
-          <TooltipProvider>
-            {children}
-            <Toaster />
-          </TooltipProvider>
-        </ThemeProvider>
+        <TooltipProvider>
+          {children}
+          <Toaster />
+        </TooltipProvider>
         {process.env.NODE_ENV === "development" && <Agentation />}
       </body>
     </html>
