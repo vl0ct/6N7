@@ -36,22 +36,15 @@ export const LandingHeader = () => {
   return (
     <header
       className={cn(
-        "sticky top-0 z-20 w-full transition-all duration-300 ease-out p-1",
-        scrolled ? "bg-transparent md:top-2" : "bg-canvas"
+        "sticky top-0 z-20 w-full bg-canvas p-1 transition-all duration-300 ease-out",
+        scrolled && "py-2"
       )}
     >
       <nav
         data-state={menuState && "active"}
         className="w-full max-lg:data-[state=active]:h-svh max-lg:data-[state=active]:overflow-y-auto max-lg:data-[state=active]:bg-black/60"
       >
-        <div
-          className={cn(
-            "mx-auto w-full rounded-md px-3 transition-all duration-300 ease-out",
-            scrolled
-              ? "max-w-xl  bg-[#0A0A0A]/60 shadow-lg shadow-black/20 backdrop-blur-xl"
-              : "max-w-5xl border border-transparent bg-[#0A0A0A]"
-          )}
-        >
+        <div className="mx-auto w-full max-w-5xl rounded-md border border-transparent bg-[#0A0A0A] px-6">
           <div className="relative flex items-center justify-between gap-6 py-3">
             <div className="flex items-center gap-8">
               <Link
