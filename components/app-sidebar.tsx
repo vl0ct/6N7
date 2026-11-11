@@ -42,7 +42,6 @@ export function AppSidebar({
           className="relative flex items-center gap-2 after:absolute after:-inset-3"
         >
           <LogoIcon className="size-5" />
-          <span className="text-sm font-medium tracking-tight">6N7</span>
         </Link>
         <div className="flex items-center gap-1">
           <WorkflowSearch workflows={workflows} />
@@ -54,7 +53,7 @@ export function AppSidebar({
           onCreateWorkflow={createWorkflowAction}
         />
       </SidebarContent>
-      <SidebarFooter className="gap-1 pl-1 pr-1 ">
+      <SidebarFooter className="gap-1 pr-1 pl-1">
         <div className="flex items-center gap-1">
           <div className="min-w-0 flex-1">
             <OrganizationSwitcher
