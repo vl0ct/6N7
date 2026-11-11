@@ -1,12 +1,6 @@
 import { cn } from "@/lib/utils"
 
-export const Logo = ({
-  className,
-  uniColor,
-}: {
-  className?: string
-  uniColor?: boolean
-}) => {
+export const Logo = ({ className }: { className?: string }) => {
   return (
     <span
       className={cn(
@@ -14,19 +8,13 @@ export const Logo = ({
         className
       )}
     >
-      <LogoIcon uniColor={uniColor} />
+      <LogoIcon />
       <span className="text-lg font-semibold tracking-tight">6N7</span>
     </span>
   )
 }
 
-export const LogoIcon = ({
-  className,
-  uniColor,
-}: {
-  className?: string
-  uniColor?: boolean
-}) => {
+export const LogoIcon = ({ className }: { className?: string }) => {
   return (
     <svg
       className={cn("size-6 shrink-0", className)}
@@ -35,36 +23,18 @@ export const LogoIcon = ({
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <defs>
-        <linearGradient
-          id="6n7-mark"
-          x1="4"
-          y1="2"
-          x2="28"
-          y2="30"
-          gradientUnits="userSpaceOnUse"
-        >
-          <stop stopColor="#9B99FE" />
-          <stop offset="1" stopColor="#2BC8B7" />
-        </linearGradient>
-      </defs>
-      <rect
-        x="1"
-        y="1"
-        width="30"
-        height="30"
-        rx="9"
-        fill={uniColor ? "currentColor" : "url(#6n7-mark)"}
-      />
-      <path
-        d="M16 12v4m0 0 6 4m-6-4-6 4"
-        stroke="var(--background)"
-        strokeWidth="2"
+      {/* 67 mark */}
+      <g
+        transform="translate(0.74 0.13) scale(0.0869565)"
+        stroke="currentColor"
+        strokeWidth={22}
         strokeLinecap="round"
-      />
-      <circle cx="16" cy="9" r="3" fill="var(--background)" />
-      <circle cx="23" cy="21" r="3" fill="var(--background)" />
-      <circle cx="9" cy="21" r="3" fill="var(--background)" />
+        strokeLinejoin="round"
+      >
+        <circle cx="110" cy="250" r="55" />
+        <path d="M77.4 68.9 L134.6 45 L59.1 229.1" />
+        <path d="M262.8 296.1 L205.6 320 L296 100 H186" />
+      </g>
     </svg>
   )
 }
