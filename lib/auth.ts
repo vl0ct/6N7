@@ -2,7 +2,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle"
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins"
 import { betterAuth } from "better-auth"
-import { eq } from "drizzle-orm"
+import { and, eq, isNotNull } from "drizzle-orm"
 
 import { db, schema } from "@/lib/db"
 import { sendPasswordResetEmail } from "@/lib/auth-email"
@@ -10,6 +10,27 @@ import { getSocialProviderCredentials } from "@/lib/auth-providers"
 
 const google = getSocialProviderCredentials("google")
 const github = getSocialProviderCredentials("github")
+
+/**
+ * Whether the user has a password to reset. Accounts created through a social
+ * provider have no credential account until they set one, so a reset link would
+ * be a dead end for them.
+ */
+async function hasPassword(userId: string) {
+  const [credential] = await db
+    .select({ id: schema.account.id })
+    .from(schema.account)
+    .where(
+      and(
+        eq(schema.account.userId, userId),
+        eq(schema.account.providerId, "credential"),
+        isNotNull(schema.account.password)
+      )
+    )
+    .limit(1)
+
+  return Boolean(credential)
+}
 
 // Every Vercel deployment gets its own *.vercel.app host, so the documented
 // "dynamic base URL" setup is used instead of a single BETTER_AUTH_URL: Better
@@ -35,6 +56,12 @@ export const auth = betterAuth({
     // A reset is the "I lost access" path, so drop every other session with it.
     revokeSessionsOnPasswordReset: true,
     sendResetPassword: async ({ user, url }) => {
+      // Only accounts with a password can complete a reset; social-only accounts
+      // never had one. Stay silent rather than emailing a dead link, and never
+      // mint a credential account behind their back. The endpoint answers the
+      // same either way, so this doesn't leak which addresses have a password.
+      if (!(await hasPassword(user.id))) return
+
       const email = sendPasswordResetEmail({
         to: user.email,
         name: user.name,
