@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { authClient } from "@/lib/auth-client"
+import { signOutAndLeave } from "@/features/auth/lib/sign-out"
 
 export type SessionSummary = {
   id: string
@@ -150,15 +151,17 @@ export function AccountSettings({
   async function revokeAllSessions() {
     setPendingSession("all")
     const { error } = await authClient.revokeSessions()
-    setPendingSession(null)
 
     if (error) {
+      setPendingSession(null)
       toast.error(error.message ?? "Unable to sign out everywhere")
       return
     }
 
-    router.push("/")
-    router.refresh()
+    // `revoke-sessions` deletes every session row but keeps this browser's
+    // session cookie, which leaves the proxy believing the visitor is still
+    // signed in. Clear it before leaving.
+    await signOutAndLeave()
   }
 
   return (
