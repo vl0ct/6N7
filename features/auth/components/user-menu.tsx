@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { LogOutIcon } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -14,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { authClient } from "@/lib/auth-client"
+import { signOutAndLeave } from "@/features/auth/lib/sign-out"
 
 function initials(name: string) {
   return name
@@ -33,14 +32,6 @@ export function UserMenu({
   email: string
   image?: string | null
 }) {
-  const router = useRouter()
-
-  async function signOut() {
-    await authClient.signOut()
-    router.push("/")
-    router.refresh()
-  }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -58,7 +49,10 @@ export function UserMenu({
           <DropdownMenuLabel className="truncate">{email}</DropdownMenuLabel>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" onClick={signOut}>
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={() => signOutAndLeave()}
+        >
           <LogOutIcon />
           Sign out
         </DropdownMenuItem>
