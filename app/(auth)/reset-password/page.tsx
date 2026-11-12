@@ -41,6 +41,7 @@ export default async function ResetPasswordPage({
             ) : (
               <Button
                 className="w-full"
+                nativeButton={false}
                 render={<Link href="/forgot-password" />}
               >
                 Request a new link
