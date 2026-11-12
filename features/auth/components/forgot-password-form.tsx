@@ -46,7 +46,16 @@ export function ForgotPasswordForm() {
             reset link is on its way. It expires in one hour.
           </p>
         </div>
-        <Button variant="outline" className="w-full" render={<Link href="/sign-in" />}>
+        <p className="text-sm text-muted-foreground">
+          Accounts created with Google or GitHub have no password to reset. Sign
+          in with that provider instead.
+        </p>
+        <Button
+          variant="outline"
+          className="w-full"
+          nativeButton={false}
+          render={<Link href="/sign-in" />}
+        >
           Back to sign in
         </Button>
       </div>
