@@ -10,6 +10,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
 import { authClient } from "@/lib/auth-client"
+import { signOutAndLeave } from "@/features/auth/lib/sign-out"
 import { toOrganizationSlug } from "@/features/auth/lib/to-organization-slug"
 import type { OrganizationSummary } from "@/features/auth/components/organization-switcher"
 
@@ -86,12 +87,6 @@ export function OrganizationPicker({
     router.refresh()
   }
 
-  async function signOut() {
-    await authClient.signOut()
-    router.push("/")
-    router.refresh()
-  }
-
   return (
     <div className="flex flex-col gap-6">
       {organizations.length > 0 ? (
@@ -157,7 +152,11 @@ export function OrganizationPicker({
       </form>
 
       <Separator />
-      <Button variant="ghost" onClick={signOut} className="self-start">
+      <Button
+        variant="ghost"
+        onClick={() => signOutAndLeave()}
+        className="self-start"
+      >
         Sign out
       </Button>
     </div>
